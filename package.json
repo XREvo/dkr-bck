@@ -4,9 +4,10 @@
   "description": "Directory backup from a docker container",
   "main": "index.js",
   "directories": {
-    "doc": "docs"
+    "spec": "specs"
   },
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -14,5 +15,11 @@
     "url": "git@git.xrevo.fr:xrevo/dkr-bck.git"
   },
   "author": "Emilien GUILMINEAU",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "^2.3.2"
+  },
+  "dependencies": {
+    "promise": "^7.0.4"
+  }
 }
