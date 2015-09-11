@@ -10,12 +10,12 @@ var configFilePath = '/tmp/config/config.json';
 // PROCESS
 config.toJSON(configFilePath)
     .then(config.validate)
-    // .then(backup.check)
-    // .then(backup.compress)
-    // .then(backup.crypt)
-    // .then(ftp.upload)
-    // .then(ftp.clean)
-    // .then(backup.clean)
+    .then(backup.check)
+    .then(backup.compress)
+    .then(backup.crypt)
+    .then(ftp.upload)
+    .then(ftp.clean)
+    .then(backup.clean)
     .then(function(result) {
         console.log("backup done!");
         process.exit(0);
