@@ -1,5 +1,3 @@
-process.env['mocha-unfunk-style'] = 'html'
-
 var assert = require("assert")
   , config = require("../app/config.js")
   , errors = require("../app/errors.js");
@@ -25,7 +23,7 @@ describe('Configuration file', function() {
                 assert(result.ftp);
                 assert.equal(result.ftp.host, 'ftp.example.com');
                 assert.equal(result.ftp.port, 21);
-                assert.equal(result.ftp.username, 'username');
+                assert.equal(result.ftp.user, 'user');
                 assert.equal(result.ftp.password, 'password');
                 
                 assert(result.crypto);
@@ -54,6 +52,22 @@ describe('Configuration file', function() {
                done();
            });
         });
+        
+        describe('Global configuration: ', function () {
+            it('should prepare basic data for global process', function (done) {
+                var cfg = JSON.parse(JSON.stringify(fullConfig));
+                config.validate(cfg).then(function(result) { 
+                    assert(result.date);
+                    assert.equal(result.backupDirectory, '/backup/');
+                    assert.equal(result.zipFile, '');
+                    assert.equal(result.cryptedFile, '');
+                    assert.equal(result.workDirectory, '/tmp/work/');
+                    
+                    done();
+                });
+            });
+        });
+        
         
         describe('FTP configuration: ', function () {
             it('should return an invalid config file error if no ftp config is specified', function (done) {
@@ -92,9 +106,9 @@ describe('Configuration file', function() {
                 });
             });
             
-            it('should return an invalid config file error if no ftp username is specified', function (done) {
+            it('should return an invalid config file error if no ftp user is specified', function (done) {
                 var cfg = JSON.parse(JSON.stringify(fullConfig));
-                delete cfg.ftp.username;
+                delete cfg.ftp.user;
                 
                 config.validate(cfg).catch(function(err) { 
                     assert(err);
@@ -104,9 +118,9 @@ describe('Configuration file', function() {
                     done();
                 });
             });
-            it('should return an invalid config file error if ftp username is empty', function (done) {
+            it('should return an invalid config file error if ftp user is empty', function (done) {
                 var cfg = JSON.parse(JSON.stringify(fullConfig));
-                cfg.ftp.username = '';
+                cfg.ftp.user = '';
                 
                 config.validate(cfg).catch(function(err) { 
                     assert(err);

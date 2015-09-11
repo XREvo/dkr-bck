@@ -9,16 +9,20 @@ var toJSON = function(filePath) {
                 fs.stat(filePath, function(error, stats) {
                     if (stats.isFile()){
                         fs.open(filePath, "r", function(error, fd) {
-                            var buffer = new Buffer(stats.size);
-                            
-                            fs.read(fd, buffer, 0, buffer.length, null, function(error, bytesRead, buffer) {
-                                var data = buffer.toString("utf8", 0, buffer.length);
-                                fulfill(JSON.parse(data));
-                                fs.close(fd);
-                            });
+                            if (error) {
+                                reject(errors.fileNotFound(filePath, error));
+                            } else {
+                                var buffer = new Buffer(stats.size);
+                                
+                                fs.read(fd, buffer, 0, buffer.length, null, function(error, bytesRead, buffer) {
+                                    var data = buffer.toString("utf8", 0, buffer.length);
+                                    fulfill(JSON.parse(data));
+                                    fs.close(fd);
+                                });
+                            }
                         });
                     } else {
-                        reject(errors.fileNotFound(filePath));
+                        reject(errors.fileNotFound(filePath, error));
                     }
                 });
             } else {
@@ -35,9 +39,9 @@ var validate = function(config) {
             !config.ftp.host ||
             !config.ftp.host.length ||
              config.ftp.host.length == 0 ||
-            !config.ftp.username ||
-            !config.ftp.username.length ||
-             config.ftp.username.length == 0 ||
+            !config.ftp.user ||
+            !config.ftp.user.length ||
+             config.ftp.user.length == 0 ||
             !config.ftp.password ||
             !config.ftp.password.length ||
              config.ftp.password.length == 0 ||
@@ -84,6 +88,12 @@ var validate = function(config) {
                     config.clean.maxDaysBackup = 1;
                 }
             }
+            
+            config.date = new Date();
+            config.backupDirectory = '/backup/';
+            config.zipFile = '';
+            config.cryptedFile = '';
+            config.workDirectory = '/tmp/work/';
             
             fulfill(config);
         }

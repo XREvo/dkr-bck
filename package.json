@@ -20,6 +20,9 @@
     "mocha": "^2.3.2"
   },
   "dependencies": {
-    "promise": "^7.0.4"
+    "archiver": "^0.15.1",
+    "ftp": "^0.3.10",
+    "promise": "^7.0.4",
+    "underscore": "^1.8.3"
   }
 }
