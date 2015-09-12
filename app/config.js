@@ -90,10 +90,10 @@ var validate = function(config) {
             }
             
             config.date = new Date();
-            config.backupDirectory = '/backup/';
+            config.backupDirectory = '/usr/backup/';
             config.zipFile = '';
             config.cryptedFile = '';
-            config.workDirectory = '/tmp/work/';
+            config.workDirectory = '/usr/work/';
             
             fulfill(config);
         }

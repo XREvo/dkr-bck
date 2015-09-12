@@ -2,7 +2,7 @@
 	"ftp": {
 		"host": "ftp.example.com",
 		"port": 21,
-		"username": "username",
+		"user": "username",
 		"password": "password"
 	},
 	"crypto": {

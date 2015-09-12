@@ -5,7 +5,7 @@ var config = require('./app/config.js')
 require('./extras/date.format.js');
 
 // GLOBAL VARIABLES
-var configFilePath = '/tmp/config/config.json';
+var configFilePath = '/usr/cfg/config.json';
 
 // PROCESS
 config.toJSON(configFilePath)

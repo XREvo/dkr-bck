@@ -23,7 +23,7 @@ describe('Configuration file', function() {
                 assert(result.ftp);
                 assert.equal(result.ftp.host, 'ftp.example.com');
                 assert.equal(result.ftp.port, 21);
-                assert.equal(result.ftp.user, 'user');
+                assert.equal(result.ftp.user, 'username');
                 assert.equal(result.ftp.password, 'password');
                 
                 assert(result.crypto);
@@ -58,10 +58,10 @@ describe('Configuration file', function() {
                 var cfg = JSON.parse(JSON.stringify(fullConfig));
                 config.validate(cfg).then(function(result) { 
                     assert(result.date);
-                    assert.equal(result.backupDirectory, '/backup/');
+                    assert.equal(result.backupDirectory, '/usr/backup/');
                     assert.equal(result.zipFile, '');
                     assert.equal(result.cryptedFile, '');
-                    assert.equal(result.workDirectory, '/tmp/work/');
+                    assert.equal(result.workDirectory, '/usr/work/');
                     
                     done();
                 });
@@ -163,6 +163,9 @@ describe('Configuration file', function() {
                 config.validate(cfg).then(function (result) { 
                     assert.equal(result.ftp.port, 21);
                     
+                    done();
+                }).catch(function(err) {
+                    console.log(err);
                     done();
                 });
             });
