@@ -6,8 +6,6 @@ var assert = require("assert")
   , errors = require("../app/errors.js")
   , tools = require('../extras/clone.js');
 
-require('../extras/date.format.js');
-  
 describe('Backup', function() {
     var fullConfig = { };
     
@@ -66,9 +64,11 @@ describe('Backup', function() {
         it('should return config file wth zipFile property filled', function (done) {
             var cfg = tools.clone(fullConfig);
             cfg.backupDirectory = './test/';
+            cfg.date = new Date(cfg.date);
             
             backup.compress(cfg).then(function(result) { 
                 var expected = tools.clone(cfg);
+                expected.date = new Date(expected.date);
                 expected.zipFile = expected.workDirectory + expected.date.format('yyyymmdd-HHMMss') + '.zip';
                 assert.deepEqual(expected, result)
                 

@@ -5,6 +5,9 @@ var fs = require('fs')
   , errors = require("./errors.js")
   , config = require("./config.js");
 
+// POLYFILLS
+require('../extras/date.format.js');
+
 var check = function(config) {
     return new Promise(function (fulfill, reject) {
         fs.readdir(config.backupDirectory, function(err, files) {

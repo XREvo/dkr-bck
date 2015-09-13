@@ -32,6 +32,18 @@ var toJSON = function(filePath) {
     });
 };
 
+var setDefaults = function(config) {
+    return new Promise(function (fulfill, reject) {
+        config.date = new Date();
+        config.backupDirectory = '/usr/backup/';
+        config.zipFile = '';
+        config.cryptedFile = '';
+        config.workDirectory = '/usr/work/';
+        
+        fulfill(config);
+    });
+};
+
 var validate = function(config) {
     return new Promise(function (fulfill, reject) {
         if (!config ||
@@ -89,16 +101,13 @@ var validate = function(config) {
                 }
             }
             
-            config.date = new Date();
-            config.backupDirectory = '/usr/backup/';
-            config.zipFile = '';
-            config.cryptedFile = '';
-            config.workDirectory = '/usr/work/';
-            
-            fulfill(config);
+            setDefaults(config)
+            .then(function(result) { fulfill(result); })
+            .catch(function(err) { reject(err); });
         }
     });
 };
 
 exports.toJSON = toJSON;
 exports.validate = validate;
+exports.setDefaults = setDefaults;

@@ -1,8 +1,21 @@
 var assert = require("assert")
   , config = require("../app/config.js")
-  , errors = require("../app/errors.js");
+  , errors = require("../app/errors.js")
+  , tools = require('../extras/clone.js');
   
 describe('Configuration file', function() {
+    var fullConfig = { };
+    
+    before(function(done) {
+       var fileName = './test/assets/config.full.json'; 
+       config.toJSON(fileName)
+            .then(config.validate)
+            .then(function (result) {
+                fullConfig = result;
+                done();
+            });
+    });
+    
     describe('Reading file: ', function () {
         it('should return a file not found error if config file don\'t exists', function (done) {
             var fakeFileName = 'fake file name';
@@ -42,20 +55,25 @@ describe('Configuration file', function() {
             });
         });
     });
-    describe('Validate: ', function () {
-        var fullConfig = { };
-        
-        before(function(done) {
-           var fileName = './test/assets/config.full.json'; 
-           config.toJSON(fileName).then(function (result) { 
-               fullConfig = result;
-               done();
-           });
+    describe('Set defaults values: ', function () {
+        it('should return an object with default values', function (done) {
+            var cfg = tools.clone(fullConfig);
+            
+            config.validate(cfg).then(function(result) { 
+                assert(result.date);
+                assert.equal(result.backupDirectory, '/usr/backup/');
+                assert.equal(result.zipFile, '');
+                assert.equal(result.cryptedFile, '');
+                assert.equal(result.workDirectory, '/usr/work/');
+                
+                done();
+            });
         });
-        
+    });
+    describe('Validate: ', function () {
         describe('Global configuration: ', function () {
             it('should prepare basic data for global process', function (done) {
-                var cfg = JSON.parse(JSON.stringify(fullConfig));
+                var cfg = tools.clone(fullConfig);
                 config.validate(cfg).then(function(result) { 
                     assert(result.date);
                     assert.equal(result.backupDirectory, '/usr/backup/');
@@ -82,7 +100,7 @@ describe('Configuration file', function() {
             });
             
             it('should return an invalid config file error if no ftp host is specified', function (done) {
-                var cfg = JSON.parse(JSON.stringify(fullConfig));
+                var cfg = tools.clone(fullConfig);
                 delete cfg.ftp.host;
                 
                 config.validate(cfg).catch(function(err) { 
@@ -94,7 +112,7 @@ describe('Configuration file', function() {
                 });
             });
             it('should return an invalid config file error if ftp host is empty', function (done) {
-                var cfg = JSON.parse(JSON.stringify(fullConfig));
+                var cfg = tools.clone(fullConfig);
                 cfg.ftp.host = '';
                 
                 config.validate(cfg).catch(function(err) { 
@@ -107,7 +125,7 @@ describe('Configuration file', function() {
             });
             
             it('should return an invalid config file error if no ftp user is specified', function (done) {
-                var cfg = JSON.parse(JSON.stringify(fullConfig));
+                var cfg = tools.clone(fullConfig);
                 delete cfg.ftp.user;
                 
                 config.validate(cfg).catch(function(err) { 
@@ -119,7 +137,7 @@ describe('Configuration file', function() {
                 });
             });
             it('should return an invalid config file error if ftp user is empty', function (done) {
-                var cfg = JSON.parse(JSON.stringify(fullConfig));
+                var cfg = tools.clone(fullConfig);
                 cfg.ftp.user = '';
                 
                 config.validate(cfg).catch(function(err) { 
@@ -132,7 +150,7 @@ describe('Configuration file', function() {
             });
             
             it('should return an invalid config file error if no ftp password is specified', function (done) {
-                var cfg = JSON.parse(JSON.stringify(fullConfig));
+                var cfg = tools.clone(fullConfig);
                 delete cfg.ftp.password;
                 
                 config.validate(cfg).catch(function(err) { 
@@ -144,7 +162,7 @@ describe('Configuration file', function() {
                 });
             });
             it('should return an invalid config file error if ftp password is empty', function (done) {
-                var cfg = JSON.parse(JSON.stringify(fullConfig));
+                var cfg = tools.clone(fullConfig);
                 cfg.ftp.password = '';
                 
                 config.validate(cfg).catch(function(err) { 
@@ -157,7 +175,7 @@ describe('Configuration file', function() {
             });
             
             it('should set ftp port to 21 if not specified', function (done) {
-                var cfg = JSON.parse(JSON.stringify(fullConfig));
+                var cfg = tools.clone(fullConfig);
                 delete cfg.ftp.port;
                 
                 config.validate(cfg).then(function (result) { 
@@ -173,7 +191,7 @@ describe('Configuration file', function() {
         
         describe('Cryptographic configuration: ', function () {
             it('should return an invalid config file error if no crypto config is specified', function (done) {
-                var cfg = JSON.parse(JSON.stringify(fullConfig));
+                var cfg = tools.clone(fullConfig);
                 delete cfg.crypto;
                 
                 config.validate(cfg).catch(function(err) { 
@@ -186,7 +204,7 @@ describe('Configuration file', function() {
             });
             
             it('should return an invalid config file error if no crypto key is specified', function (done) {
-                var cfg = JSON.parse(JSON.stringify(fullConfig));
+                var cfg = tools.clone(fullConfig);
                 delete cfg.crypto.key;
                 
                 config.validate(cfg).catch(function(err) { 
@@ -198,7 +216,7 @@ describe('Configuration file', function() {
                 });
             });
             it('should return an invalid config file error if crypto key is empty', function (done) {
-                var cfg = JSON.parse(JSON.stringify(fullConfig));
+                var cfg = tools.clone(fullConfig);
                 cfg.crypto.key = '';
                 
                 config.validate(cfg).catch(function(err) { 
@@ -211,7 +229,7 @@ describe('Configuration file', function() {
             });
             
             it('should set crypto algorithm to aes-256-ctr if not specified', function (done) {
-                var cfg = JSON.parse(JSON.stringify(fullConfig));
+                var cfg = tools.clone(fullConfig);
                 delete cfg.crypto.algorithm;
                 
                 config.validate(cfg).then(function(result) { 
@@ -224,7 +242,7 @@ describe('Configuration file', function() {
         
         describe('Cron Job configuration: ', function () {
             it('should set as inactive cron if cron config is not specified', function (done) {
-                var cfg = JSON.parse(JSON.stringify(fullConfig));
+                var cfg = tools.clone(fullConfig);
                 delete cfg.cron;
                 
                 config.validate(cfg).then(function(result) { 
@@ -234,7 +252,7 @@ describe('Configuration file', function() {
                 });
             });
             it('should set as inactive if active flag is not specified', function (done) {
-                var cfg = JSON.parse(JSON.stringify(fullConfig));
+                var cfg = tools.clone(fullConfig);
                 delete cfg.cron.active;
                 
                 config.validate(cfg).then(function(result) { 
@@ -244,7 +262,7 @@ describe('Configuration file', function() {
                 });
             });
             it('should set as inactive if time properties is not specified', function (done) {
-                var cfg = JSON.parse(JSON.stringify(fullConfig));
+                var cfg = tools.clone(fullConfig);
                 delete cfg.cron.time;
                 
                 config.validate(cfg).then(function(result) { 
@@ -255,7 +273,7 @@ describe('Configuration file', function() {
                 });
             });
             it('should set as inactive if time properties is empty', function (done) {
-                var cfg = JSON.parse(JSON.stringify(fullConfig));
+                var cfg = tools.clone(fullConfig);
                 cfg.cron.time = '';
                 
                 config.validate(cfg).then(function(result) { 
@@ -269,7 +287,7 @@ describe('Configuration file', function() {
         
         describe('Clean configuration: ', function () {
             it('should set as inactive cron if clean config is not specified', function (done) {
-                var cfg = JSON.parse(JSON.stringify(fullConfig));
+                var cfg = tools.clone(fullConfig);
                 delete cfg.clean;
                 
                 config.validate(cfg).then(function(result) { 
@@ -279,7 +297,7 @@ describe('Configuration file', function() {
                 });
             });
             it('should set as inactive if active flag is not specified', function (done) {
-                var cfg = JSON.parse(JSON.stringify(fullConfig));
+                var cfg = tools.clone(fullConfig);
                 delete cfg.clean.active;
                 
                 config.validate(cfg).then(function(result) { 
@@ -289,7 +307,7 @@ describe('Configuration file', function() {
                 });
             });
             it('should set as inactive if maxDaysBackup properties is not specified', function (done) {
-                var cfg = JSON.parse(JSON.stringify(fullConfig));
+                var cfg = tools.clone(fullConfig);
                 delete cfg.clean.maxDaysBackup;
                 
                 config.validate(cfg).then(function(result) { 
@@ -300,7 +318,7 @@ describe('Configuration file', function() {
                 });
             });
             it('should set as inactive if maxDaysBackup properties <= 0', function (done) {
-                var cfg = JSON.parse(JSON.stringify(fullConfig));
+                var cfg = tools.clone(fullConfig);
                 cfg.clean.maxDaysBackup = '';
                 
                 config.validate(cfg).then(function(result) { 
