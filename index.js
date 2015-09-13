@@ -1,6 +1,6 @@
 // REQUIRES
-var config = require('./app/config.js')
-  , backup = require('./app/backup.js')
+var cfg = require('./app/config.js')
+  , bck = require('./app/backup.js')
   , ftp = require('./app/ftp.js')
   , CronJob = require('cron').CronJob;
  
@@ -14,13 +14,13 @@ var configFilePath = '/usr/cfg/config.json';
 var doBackup = function(config, shutdown) {
     console.log('start backup at: ' + (new Date()).format('yyyy-mm-dd HH:MM:ss'));
     
-    config.setDefaults(config)
-    .then(backup.check)
-    .then(backup.compress)
-    .then(backup.crypt)
+    cfg.setDefaults(config)
+    .then(bck.check)
+    .then(bck.compress)
+    .then(bck.crypt)
     .then(ftp.upload)
     .then(ftp.clean)
-    .then(backup.clean)
+    .then(bck.clean)
     .then(function(result) {
         console.log("backup done!");
     })
@@ -34,8 +34,8 @@ var doBackup = function(config, shutdown) {
     });
 };
 
-config.toJSON(configFilePath)
-    .then(config.validate)
+cfg.toJSON(configFilePath)
+    .then(cfg.validate)
     .then(function(config) {
         if (config.cron.active) {
             console.log('backup cron time: ' + config.cron.time);
