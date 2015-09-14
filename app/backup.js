@@ -29,16 +29,25 @@ var compress = function(config) {
         try {
             var output = fs.createWriteStream(outputFile);
             
-            var archive = archiver.create('zip', {});
-            archive.directory(config.backupDirectory);
+            output.on('finish', function() {
+                config.zipFile = outputFile;
+                fulfill(config);
+            });
+            output.on('error', function (err) {
+                reject(errors.compressionFailed(config.backupDirectory, outputFile, err));
+            });
+            
+            var archive = archiver('zip');
+            archive.on('error', function(err){
+                reject(errors.compressionFailed(config.backupDirectory, outputFile, err));
+            });
+
             archive.pipe(output);
+            archive.directory(config.backupDirectory);
             archive.finalize();
-            
-            config.zipFile = outputFile;
-            
-            fulfill(config)
         } catch (e) {
-            reject(errors.compressionFailed(config.backupDirectory, outputFile, e));}
+            reject(errors.compressionFailed(config.backupDirectory, outputFile, e));
+        }
     });
 };
 var crypt = function(config) {
