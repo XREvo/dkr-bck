@@ -1,9 +1,8 @@
 var fs = require('fs')
   , Promise = require('promise')
-  , archiver = require('archiver')
   , crypto = require('crypto')
   , errors = require("./errors.js")
-  , config = require("./config.js");
+  , exec = require('child_process').exec;
 
 // POLYFILLS
 require('../extras/date.format.js');
@@ -24,27 +23,19 @@ var check = function(config) {
 };
 var compress = function(config) {
     return new Promise(function (fulfill, reject) {
-        var outputFile = config.workDirectory + config.date.format('yyyymmdd-HHMMss') + '.zip';
+        var outputFile = config.workDirectory + config.date.format('yyyymmdd-HHMMss') + '.tar.gz';
         
         try {
-            var output = fs.createWriteStream(outputFile);
-            
-            output.on('finish', function() {
-                config.zipFile = outputFile;
-                fulfill(config);
-            });
-            output.on('error', function (err) {
-                reject(errors.compressionFailed(config.backupDirectory, outputFile, err));
-            });
-            
-            var archive = archiver('zip');
-            archive.on('error', function(err){
-                reject(errors.compressionFailed(config.backupDirectory, outputFile, err));
-            });
+            var command = 'tar -zcf ' + outputFile + ' ' +  config.backupDirectory
 
-            archive.pipe(output);
-            archive.directory(config.backupDirectory);
-            archive.finalize();
+            var child = exec(command, function (error, stdout, stderr) {
+                if (error !== null) {
+                    reject(errors.compressionFailed(config.backupDirectory, outputFile, error));
+                } else {
+                    config.zipFile = outputFile;
+                    fulfill(config);
+                }
+            });
         } catch (e) {
             reject(errors.compressionFailed(config.backupDirectory, outputFile, e));
         }
