@@ -16,7 +16,7 @@ ONBUILD COPY ./specs/config.sample.json /usr/cfg/config.json
 # ----------------------------------------------------------
 # Add volumes
 # ----------------------------------------------------------
-VOLUME ['/usr/backup', '/usr/cfg/config.json']
+VOLUME ['/usr/backup/', '/usr/cfg/config.json']
 
 # ----------------------------------------------------------
 # Remove git directory
