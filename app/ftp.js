@@ -2,8 +2,7 @@ var FTP = require('ftp')
   , path = require('path')
   , Promise = require('promise')
   , _ = require('underscore')
-  , errors = require("./errors.js")
-  , config = require("./config.js");
+  , errors = require("./errors.js");
 
 var upload = function (config) {
     return new Promise(function (fulfill, reject) {
