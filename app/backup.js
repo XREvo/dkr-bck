@@ -28,6 +28,10 @@ var compress = function(config) {
         try {
             var command = 'tar -zcf ' + outputFile + ' ' +  config.backupDirectory
 
+            if (config.excludedDirectory !== undefined && config.excludedDirectory !== null && config.excludedDirectory !== '') {
+                command += ' --exclude "' + config.excludedDirectory + '" '
+            }
+
             var child = exec(command, function (error, stdout, stderr) {
                 if (error !== null) {
                     reject(errors.compressionFailed(config.backupDirectory, outputFile, error));
