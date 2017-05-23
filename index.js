@@ -22,10 +22,10 @@ var doBackup = function(config, shutdown) {
     .then(ftp.clean)
     .then(bck.clean)
     .then(function(result) {
-        console.log("backup done!");
+        console.log('backup done! (' + (new Date()).format('yyyy-mm-dd HH:MM:ss') + ')');
     })
     .catch(function(err) {
-        console.log("backup rejected!");
+        console.log('backup rejected! (' + (new Date()).format('yyyy-mm-dd HH:MM:ss') + ')');
         console.log(err);
     })
     .finally(function () {
