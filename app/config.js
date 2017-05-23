@@ -37,6 +37,7 @@ var setDefaults = function(config) {
         config.date = new Date();
         config.backupDirectory = '/usr/backup/';
         config.excludedDirectory =  config.excludedDirectory || '';
+        config.excludedDirectories =  config.excludedDirectories || [];
         config.zipFile = '';
         config.cryptedFile = '';
         config.workDirectory = '/usr/work/';

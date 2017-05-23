@@ -31,9 +31,13 @@ var compress = function(config) {
             if (config.excludedDirectory !== undefined && config.excludedDirectory !== null && config.excludedDirectory !== '') {
                 command += ' --exclude "' + config.excludedDirectory + '" '
             }
+            if (config.excludedDirectories !== undefined && config.excludedDirectories !== null && config.excludedDirectories.length > 0) {
+                command += config.excludedDirectories.map(d => ' --exclude "' + d + '" ')
+            }
 
             var child = exec(command, function (error, stdout, stderr) {
-                if (error !== null) {
+                var fileExists = (fs.existsSync(outputFile));
+                if (error !== null && fileExists === false) {
                     reject(errors.compressionFailed(config.backupDirectory, outputFile, error));
                 } else {
                     config.zipFile = outputFile;
